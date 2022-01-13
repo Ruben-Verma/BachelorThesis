@@ -1,0 +1,15 @@
+def sqlStringMaker(byteArray):
+    sqlString2 = []
+    for i in range(0, len(byteArray), 7):
+        sqlString2.append("(")
+        for j in range(0,6):
+            sqlString2.append(str(byteArray[i+j]))
+            sqlString2.append(",")
+
+
+
+
+
+        sqlString2.append(")")
+        sqlString2.append(",")
+    return "".join(sqlString2)
