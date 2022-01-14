@@ -55,7 +55,7 @@ def insertComet(connection, path):
 def searchTime(connection,time1,time2):
     myCursor = connection.cursor()
     start = timer()
-    myCursor.execute("SELECT * FROM COMETS WHERE particestate_vz BETWEEN %s AND %s ORDER BY particestate_vz ASC",(time1,time2))
+    myCursor.execute("SELECT * FROM COMETS WHERE timesincecreation BETWEEN %s AND %s ORDER BY timesincecreation ASC",(time1,time2))
     result = myCursor.fetchall()
     end = timer()
     print(end - start)
@@ -64,9 +64,18 @@ def searchTime(connection,time1,time2):
 def createIndexOnTime(connection):
     myCursor = connection.cursor()
     start = timer()
-    myCursor.execute("CREATE INDEX Zeitindex on Comets(particestate_vz)")
+    myCursor.execute("CREATE INDEX Zeitindex on Comets(timesincecreation)")
     end = timer()
     print(end - start)
+
+def oneYearTestcase(con):
+    searchTime(con,1000000000,1031536000)
+    searchTime(con,1000172800,1031708800)
+
+def twoYearTestcase(con):
+    searchTime(con,1000000000,1063072000)
+    searchTime(con,1063244800,1094780800)
+
 
 def dropIndex(connection):
     myCursor = connection.cursor()
@@ -96,14 +105,14 @@ def changeSystemConfiguration(connection):
 def createGINIndexOnTime(connection):
     myCursor = connection.cursor()
     start = timer()
-    myCursor.execute("CREATE INDEX Zeitindex on Comets USING GIN(particestate_vz)")
+    myCursor.execute("CREATE INDEX Zeitindex on Comets USING GIN(timesincecreation)")
     end = timer()
     print(end - start)
 
 def createBRINIndexOnTime(connection):
     myCursor = connection.cursor()
     start = timer()
-    myCursor.execute("CREATE INDEX Zeitindex on Comets USING BRIN(particestate_vz)")
+    myCursor.execute("CREATE INDEX Zeitindex on Comets USING BRIN(timesincecreation)")
     end = timer()
     print(end - start)
 
@@ -120,11 +129,7 @@ try:
 except:
     print("Datenbank konnte nicht geladen werden")
 
+oneYearTestcase(con)
 
-dropIndex(con)
-myCursor = con.cursor()
-myCursor.execute("EXPLAIN ANALYZE SELECT * FROM COMETS WHERE particestate_vz BETWEEN %s AND %s ORDER BY particestate_vz ASC",(2316962600,2524599300))
-for elements in myCursor.fetchall():
-    print(elements)
 
 #insertComet(con,"/Users/rubenverma/Documents/Bachelorarbeit/1002378")
